@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - TravelHub</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .register-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .role-selector {
+            margin-bottom: 30px;
+        }
+
+        .role-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .role-card:hover {
+            border-color: #667eea;
+            background: #f8fafc;
+        }
+
+        .role-card.active {
+            border-color: #667eea;
+            background: #e0e7ff;
+        }
+
+        .role-card input[type="radio"] {
+            display: none;
+        }
+
+        .role-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .role-title {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .role-desc {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .alert {
+            border-radius: 10px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .role-specific-fields {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+
+        .role-specific-fields.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="header">
+            <i class="fas fa-globe fa-3x mb-3"></i>
+            <h2>Join TravelHub</h2>
+            <p>Create your account and start your journey</p>
+        </div>
+
+        <div class="form-container">
+            <div class="alert alert-success" id="successAlert" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <span id="successMessage"></span>
+            </div>
+
+            <div class="alert alert-danger" id="errorAlert" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span id="errorMessage"></span>
+            </div>
+
+            <form id="registerForm">
+                <!-- Role Selection -->
+                <div class="role-selector">
+                    <label class="form-label">
+                        <i class="fas fa-user-tag me-2"></i>Select Account Type
+                    </label>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="role-card" for="role-customer">
+                                <input type="radio" name="role" id="role-customer" value="customer" checked>
+                                <div class="role-icon">👤</div>
+                                <div class="role-title">Customer</div>
+                                <div class="role-desc">Book hotels, flights & tours</div>
+                            </label>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="role-card" for="role-hotel">
+                                <input type="radio" name="role" id="role-hotel" value="hotel_owner">
+                                <div class="role-icon">🏨</div>
+                                <div class="role-title">Hotel Owner</div>
+                                <div class="role-desc">List and manage your hotel</div>
+                            </label>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="role-card" for="role-ticket">
+                                <input type="radio" name="role" id="role-ticket" value="ticket_owner">
+                                <div class="role-icon">✈️</div>
+                                <div class="role-title">Ticket Provider</div>
+                                <div class="role-desc">Sell flight tickets</div>
+                            </label>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="role-card" for="role-tour">
+                                <input type="radio" name="role" id="role-tour" value="tour_company">
+                                <div class="role-icon">🗺️</div>
+                                <div class="role-title">Tour Company</div>
+                                <div class="role-desc">Offer tour packages</div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Information -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="firstName" class="form-label">
+                            <i class="fas fa-user me-2"></i>First Name
+                        </label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="lastName" class="form-label">
+                            <i class="fas fa-user me-2"></i>Last Name
+                        </label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">
+                        <i class="fas fa-envelope me-2"></i>Email Address
+                    </label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-lock me-2"></i>Password
+                        </label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="confirmPassword" class="form-label">
+                            <i class="fas fa-lock me-2"></i>Confirm Password
+                        </label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="phone" class="form-label">
+                            <i class="fas fa-phone me-2"></i>Phone Number
+                        </label>
+                        <input type="tel" class="form-control" id="phone" name="phone">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="country" class="form-label">
+                            <i class="fas fa-globe me-2"></i>Country
+                        </label>
+                        <input type="text" class="form-control" id="country" name="country">
+                    </div>
+                </div>
+
+                <!-- Hotel Owner Fields -->
+                <div id="hotel-fields" class="role-specific-fields">
+                    <h5 class="mb-3"><i class="fas fa-hotel me-2"></i>Hotel Information</h5>
+                    <div class="mb-3">
+                        <label for="hotelName" class="form-label">Hotel Name</label>
+                        <input type="text" class="form-control" id="hotelName" name="hotelName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="hotelAddress" class="form-label">Hotel Address</label>
+                        <input type="text" class="form-control" id="hotelAddress" name="hotelAddress">
+                    </div>
+                    <div class="mb-3">
+                        <label for="hotelLicense" class="form-label">Hotel License Number</label>
+                        <input type="text" class="form-control" id="hotelLicense" name="hotelLicense">
+                    </div>
+                </div>
+
+                <!-- Ticket Owner Fields -->
+                <div id="ticket-fields" class="role-specific-fields">
+                    <h5 class="mb-3"><i class="fas fa-plane me-2"></i>Airline Information</h5>
+                    <div class="mb-3">
+                        <label for="airlineName" class="form-label">Airline Name</label>
+                        <input type="text" class="form-control" id="airlineName" name="airlineName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="airlineLicense" class="form-label">Airline License Number</label>
+                        <input type="text" class="form-control" id="airlineLicense" name="airlineLicense">
+                    </div>
+                </div>
+
+                <!-- Tour Company Fields -->
+                <div id="tour-fields" class="role-specific-fields">
+                    <h5 class="mb-3"><i class="fas fa-map-marked-alt me-2"></i>Company Information</h5>
+                    <div class="mb-3">
+                        <label for="companyName" class="form-label">Company Name</label>
+                        <input type="text" class="form-control" id="companyName" name="companyName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="companyAddress" class="form-label">Company Address</label>
+                        <input type="text" class="form-control" id="companyAddress" name="companyAddress">
+                    </div>
+                    <div class="mb-3">
+                        <label for="companyLicense" class="form-label">Company License Number</label>
+                        <input type="text" class="form-control" id="companyLicense" name="companyLicense">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-register">
+                    <i class="fas fa-user-plus me-2"></i>Create Account
+                </button>
+
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="login.html">Login here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Role card selection
+        document.querySelectorAll('.role-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                
+                const role = this.querySelector('input[type="radio"]').value;
+                showRoleFields(role);
+            });
+        });
+
+        // Show/hide role-specific fields
+        function showRoleFields(role) {
+            document.querySelectorAll('.role-specific-fields').forEach(field => {
+                field.classList.remove('active');
+            });
+
+            if (role === 'hotel_owner') {
+                document.getElementById('hotel-fields').classList.add('active');
+            } else if (role === 'ticket_owner') {
+                document.getElementById('ticket-fields').classList.add('active');
+            } else if (role === 'tour_company') {
+                document.getElementById('tour-fields').classList.add('active');
+            }
+        }
+
+        // Set initial active card
+        document.querySelector('.role-card').classList.add('active');
+
+        // Form submission
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            // Get selected role
+            data.role = document.querySelector('input[name="role"]:checked').value;
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('successMessage').textContent = result.message;
+                    document.getElementById('successAlert').classList.add('show');
+                    document.getElementById('errorAlert').classList.remove('show');
+                    
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 3000);
+                } else {
+                    document.getElementById('errorMessage').textContent = result.message;
+                    document.getElementById('errorAlert').classList.add('show');
+                    document.getElementById('successAlert').classList.remove('show');
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = 'Network error. Please try again.';
+                document.getElementById('errorAlert').classList.add('show');
+            }
+        });
+    </script>
+</body>
+</html>

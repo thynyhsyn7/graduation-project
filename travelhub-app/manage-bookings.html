@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Bookings - TravelHub Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 260px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: white;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header i {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 10px 0 5px 0;
+        }
+
+        .sidebar-header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .nav-item {
+            margin: 5px 0;
+        }
+
+        .nav-link {
+            color: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .top-bar h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+        }
+
+        .search-filter-bar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.total { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .stat-icon.hotels { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .stat-icon.flights { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .stat-icon.tours { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }
+        .stat-icon.pending { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+        .stat-icon.confirmed { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); color: white; }
+
+        .stat-info h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            color: #333;
+        }
+
+        .stat-info p {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .content-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .card-header h4 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .filter-tab:hover {
+            border-color: #667eea;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .bookings-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .bookings-table thead th {
+            background: #f8f9fa;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            padding: 12px 15px;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .bookings-table tbody tr {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .bookings-table tbody td {
+            padding: 15px;
+            border: none;
+            vertical-align: middle;
+        }
+
+        .bookings-table tbody tr:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .customer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .customer-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .customer-details h6 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .customer-details p {
+            margin: 0;
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .badge.hotel { background: #fce7f3; color: #9f1239; }
+        .badge.flight { background: #dbeafe; color: #1e40af; }
+        .badge.tour { background: #d1fae5; color: #065f46; }
+        .badge.pending { background: #fef3c7; color: #92400e; }
+        .badge.confirmed { background: #d1fae5; color: #065f46; }
+        .badge.cancelled { background: #fee2e2; color: #991b1b; }
+        .badge.completed { background: #e0e7ff; color: #3730a3; }
+        .badge.paid { background: #d1fae5; color: #065f46; }
+        .badge.unpaid { background: #fee2e2; color: #991b1b; }
+        .badge.refunded { background: #f3f4f6; color: #374151; }
+
+        .btn-action {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 2px;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-view { background: #3b82f6; }
+        .btn-view:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-confirm { background: #10b981; }
+        .btn-confirm:hover { background: #059669; transform: translateY(-1px); }
+        .btn-cancel { background: #ef4444; }
+        .btn-cancel:hover { background: #dc2626; transform: translateY(-1px); }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h5 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .modal-header h5 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #64748b;
+            cursor: pointer;
+        }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar-header h3,
+            .sidebar-header p,
+            .nav-link span {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 70px;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .search-filter-bar {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-row {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-crown"></i>
+            <h3>TravelHub</h3>
+            <p>Admin Panel</p>
+        </div>
+
+        <nav class="nav flex-column">
+            <div class="nav-item">
+                <a class="nav-link" href="/dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="/manage-users.html">
+                    <i class="fas fa-users"></i>
+                    <span>Manage Users</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link active" href="/manage-bookings.html">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>All Bookings</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="/admin-profile.html">
+                    <i class="fas fa-user-circle"></i>
+                    <span>My Profile</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div>
+                <h1>📅 Manage Bookings</h1>
+                <p class="text-muted mb-0" style="font-size: 14px;">View and manage all bookings</p>
+            </div>
+            <div class="search-filter-bar">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search bookings..." onkeyup="filterBookings()">
+                    <i class="fas fa-search"></i>
+                </div>
+                <select class="filter-select" id="dateFilter" onchange="filterBookings()">
+                    <option value="all">All Time</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-icon total">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalBookings">0</h3>
+                    <p>Total Bookings</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon hotels">
+                    <i class="fas fa-hotel"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="hotelBookings">0</h3>
+                    <p>Hotel Bookings</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon flights">
+                    <i class="fas fa-plane"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="flightBookings">0</h3>
+                    <p>Flight Bookings</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon tours">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="tourBookings">0</h3>
+                    <p>Tour Bookings</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="pendingBookings">0</h3>
+                    <p>Pending</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon confirmed">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="confirmedBookings">0</h3>
+                    <p>Confirmed</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Table -->
+        <div class="content-card">
+            <div class="card-header">
+                <h4><i class="fas fa-list me-2"></i>All Bookings</h4>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filterByType('all')">All</button>
+                    <button class="filter-tab" onclick="filterByType('hotel')">Hotels</button>
+                    <button class="filter-tab" onclick="filterByType('flight')">Flights</button>
+                    <button class="filter-tab" onclick="filterByType('tour')">Tours</button>
+                    <button class="filter-tab" onclick="filterByStatus('pending')">Pending</button>
+                    <button class="filter-tab" onclick="filterByStatus('confirmed')">Confirmed</button>
+                    <button class="filter-tab" onclick="filterByStatus('cancelled')">Cancelled</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="bookings-table">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Customer</th>
+                            <th>Type</th>
+                            <th>Service</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingsTableBody">
+                        <tr>
+                            <td colspan="9">
+                                <div class="loading">
+                                    <div class="spinner"></div>
+                                    <p>Loading bookings...</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Details Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5><i class="fas fa-calendar-check me-2"></i>Booking Details</h5>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody">
+                <!-- Booking details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let allBookings = [];
+        let currentFilter = { type: 'all', status: 'all' };
+
+        // Load bookings
+        async function loadBookings() {
+            try {
+                const response = await fetch('/api/admin/bookings');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allBookings = data.bookings;
+                    updateStats();
+                    displayBookings(allBookings);
+                } else {
+                    showError('Failed to load bookings');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Network error');
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalBookings').textContent = allBookings.length;
+            
+            const hotelCount = allBookings.filter(b => b.bookingType === 'hotel').length;
+            document.getElementById('hotelBookings').textContent = hotelCount;
+            
+            const flightCount = allBookings.filter(b => b.bookingType === 'flight').length;
+            document.getElementById('flightBookings').textContent = flightCount;
+            
+            const tourCount = allBookings.filter(b => b.bookingType === 'tour').length;
+            document.getElementById('tourBookings').textContent = tourCount;
+            
+            const pendingCount = allBookings.filter(b => b.status === 'pending').length;
+            document.getElementById('pendingBookings').textContent = pendingCount;
+            
+            const confirmedCount = allBookings.filter(b => b.status === 'confirmed').length;
+            document.getElementById('confirmedBookings').textContent = confirmedCount;
+        }
+
+        // Display bookings
+        function displayBookings(bookings) {
+            const tbody = document.getElementById('bookingsTableBody');
+            
+            if (bookings.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9">
+                            <div class="empty-state">
+                                <i class="fas fa-calendar-times"></i>
+                                <h5>No bookings found</h5>
+                                <p>No bookings match your current filter</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = bookings.map(booking => {
+                const initials = `${booking.user.firstName[0]}${booking.user.lastName[0]}`.toUpperCase();
+                const serviceName = booking.hotel?.name || booking.flight?.flightNumber || booking.tour?.name || '-';
+                const bookingId = booking._id.substring(0, 8).toUpperCase();
+                
+                return `
+                    <tr>
+                        <td><strong>#${bookingId}</strong></td>
+                        <td>
+                            <div class="customer-info">
+                                <div class="customer-avatar">${initials}</div>
+                                <div class="customer-details">
+                                    <h6>${booking.user.firstName} ${booking.user.lastName}</h6>
+                                    <p>${booking.user.email}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge ${booking.bookingType}">${booking.bookingType}</span></td>
+                        <td>${serviceName}</td>
+                        <td>${new Date(booking.createdAt).toLocaleDateString()}</td>
+                        <td><strong>$${booking.totalPrice.toFixed(2)}</strong></td>
+                        <td><span class="badge ${booking.paymentStatus}">${booking.paymentStatus}</span></td>
+                        <td><span class="badge ${booking.status}">${booking.status}</span></td>
+                        <td>
+                            <button class="btn-action btn-view" onclick='viewBooking(${JSON.stringify(booking).replace(/'/g, "&apos;")})'>
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filter by type
+        function filterByType(type) {
+            currentFilter.type = type;
+            currentFilter.status = 'all';
+            updateActiveTab(event.target);
+            applyFilters();
+        }
+
+        // Filter by status
+        function filterByStatus(status) {
+            currentFilter.status = status;
+            currentFilter.type = 'all';
+            updateActiveTab(event.target);
+            applyFilters();
+        }
+
+        // Update active tab
+        function updateActiveTab(clickedTab) {
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            clickedTab.classList.add('active');
+        }
+
+        // Apply filters
+        function applyFilters() {
+            let filtered = allBookings;
+            
+            if (currentFilter.type !== 'all') {
+                filtered = filtered.filter(b => b.bookingType === currentFilter.type);
+            }
+            
+            if (currentFilter.status !== 'all') {
+                filtered = filtered.filter(b => b.status === currentFilter.status);
+            }
+            
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (searchTerm) {
+                filtered = filtered.filter(b => 
+                    b.user.firstName.toLowerCase().includes(searchTerm) ||
+                    b.user.lastName.toLowerCase().includes(searchTerm) ||
+                    b.user.email.toLowerCase().includes(searchTerm) ||
+                    (b.hotel?.name && b.hotel.name.toLowerCase().includes(searchTerm)) ||
+                    (b.flight?.flightNumber && b.flight.flightNumber.toLowerCase().includes(searchTerm)) ||
+                    (b.tour?.name && b.tour.name.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            const dateFilter = document.getElementById('dateFilter').value;
+            if (dateFilter !== 'all') {
+                const now = new Date();
+                filtered = filtered.filter(b => {
+                    const bookingDate = new Date(b.createdAt);
+                    if (dateFilter === 'today') {
+                        return bookingDate.toDateString() === now.toDateString();
+                    } else if (dateFilter === 'week') {
+                        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                        return bookingDate >= weekAgo;
+                    } else if (dateFilter === 'month') {
+                        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                        return bookingDate >= monthAgo;
+                    }
+                    return true;
+                });
+            }
+            
+            displayBookings(filtered);
+        }
+
+        // Filter bookings (search)
+        function filterBookings() {
+            applyFilters();
+        }
+
+        // View booking details
+        function viewBooking(booking) {
+            const modalBody = document.getElementById('modalBody');
+            const bookingId = booking._id.substring(0, 8).toUpperCase();
+            
+            let serviceDetails = '';
+            if (booking.bookingType === 'hotel') {
+                serviceDetails = `
+                    <div class="detail-row">
+                        <div class="detail-label">Hotel:</div>
+                        <div class="detail-value">${booking.hotel?.name || '-'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Room Type:</div>
+                        <div class="detail-value">${booking.roomType || '-'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Check-in:</div>
+                        <div class="detail-value">${booking.checkIn ? new Date(booking.checkIn).toLocaleDateString() : '-'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Check-out:</div>
+                        <div class="detail-value">${booking.checkOut ? new Date(booking.checkOut).toLocaleDateString() : '-'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Guests:</div>
+                        <div class="detail-value">${booking.guests || '-'}</div>
+                    </div>
+                `;
+            } else if (booking.bookingType === 'flight') {
+                serviceDetails = `
+                    <div class="detail-row">
+                        <div class="detail-label">Flight Number:</div>
+                        <div class="detail-value">${booking.flight?.flightNumber || '-'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Route:</div>
+                        <div class="detail-value">${booking.flight?.from || '-'} → ${booking.flight?.to || '-'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Passengers:</div>
+                        <div class="detail-value">${booking.passengers || '-'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Seats:</div>
+                        <div class="detail-value">${booking.seatNumbers?.join(', ') || '-'}</div>
+                    </div>
+                `;
+            } else if (booking.bookingType === 'tour') {
+                serviceDetails = `
+                    <div class="detail-row">
+                        <div class="detail-label">Tour:</div>
+                        <div class="detail-value">${booking.tour?.name || '-'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Destination:</div>
+                        <div class="detail-value">${booking.tour?.destination || '-'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">People:</div>
+                        <div class="detail-value">${booking.numberOfPeople || '-'}</div>
+                    </div>
+                `;
+            }
+            
+            modalBody.innerHTML = `
+                <div class="detail-row">
+                    <div class="detail-label">Booking ID:</div>
+                    <div class="detail-value"><strong>#${bookingId}</strong></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Customer:</div>
+                    <div class="detail-value">${booking.user.firstName} ${booking.user.lastName}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Email:</div>
+                    <div class="detail-value">${booking.user.email}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Phone:</div>
+                    <div class="detail-value">${booking.user.phone || 'Not provided'}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Booking Type:</div>
+                    <div class="detail-value"><span class="badge ${booking.bookingType}">${booking.bookingType.toUpperCase()}</span></div>
+                </div>
+                ${serviceDetails}
+                <div class="detail-row">
+                    <div class="detail-label">Total Amount:</div>
+                    <div class="detail-value"><strong style="font-size: 18px; color: #667eea;">$${booking.totalPrice.toFixed(2)}</strong></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Payment Status:</div>
+                    <div class="detail-value"><span class="badge ${booking.paymentStatus}">${booking.paymentStatus.toUpperCase()}</span></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Booking Status:</div>
+                    <div class="detail-value"><span class="badge ${booking.status}">${booking.status.toUpperCase()}</span></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Booked On:</div>
+                    <div class="detail-value">${new Date(booking.createdAt).toLocaleString()}</div>
+                </div>
+            `;
+            
+            document.getElementById('bookingModal').classList.add('show');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('bookingModal').classList.remove('show');
+        }
+
+        // Logout
+        async function logout() {
+            if (!confirm('Are you sure you want to logout?')) return;
+            
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                window.location.href = '/login';
+            } catch (error) {
+                window.location.href = '/login';
+            }
+        }
+
+        // Show error
+        function showError(message) {
+            const tbody = document.getElementById('bookingsTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9">
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <h5>Error</h5>
+                            <p>${message}</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('bookingModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBookings();
+            
+            // Refresh every 30 seconds
+            setInterval(loadBookings, 30000);
+        });
+    </script>
+</body>
+</html>

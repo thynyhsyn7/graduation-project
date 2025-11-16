@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users - TravelHub Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 260px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: white;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header i {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 10px 0 5px 0;
+        }
+
+        .sidebar-header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .nav-item {
+            margin: 5px 0;
+        }
+
+        .nav-link {
+            color: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .top-bar h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+        }
+
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.total { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .stat-icon.pending { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .stat-icon.active { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }
+        .stat-icon.inactive { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+
+        .stat-info h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            color: #333;
+        }
+
+        .stat-info p {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .content-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .card-header h4 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .filter-tab:hover {
+            border-color: #667eea;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .users-table thead th {
+            background: #f8f9fa;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            padding: 12px 15px;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .users-table tbody tr {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+
+        .users-table tbody td {
+            padding: 15px;
+            border: none;
+            vertical-align: middle;
+        }
+
+        .users-table tbody tr:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .user-details h6 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .user-details p {
+            margin: 0;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .badge.admin { background: #fef3c7; color: #92400e; }
+        .badge.hotel_owner { background: #dbeafe; color: #1e40af; }
+        .badge.ticket_owner { background: #e0e7ff; color: #3730a3; }
+        .badge.tour_company { background: #d1fae5; color: #065f46; }
+        .badge.customer { background: #f3f4f6; color: #374151; }
+        .badge.pending { background: #fef3c7; color: #92400e; }
+        .badge.approved { background: #d1fae5; color: #065f46; }
+        .badge.active { background: #d1f2eb; color: #0c5a4a; }
+        .badge.inactive { background: #f8d7da; color: #842029; }
+        .badge.verified { background: #d1e7dd; color: #0f5132; }
+        .badge.unverified { background: #fff3cd; color: #856404; }
+
+        .btn-action {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 2px;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-approve { background: #10b981; }
+        .btn-approve:hover { background: #059669; transform: translateY(-1px); }
+        .btn-reject { background: #ef4444; }
+        .btn-reject:hover { background: #dc2626; transform: translateY(-1px); }
+        .btn-view { background: #3b82f6; }
+        .btn-view:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-activate { background: #10b981; }
+        .btn-activate:hover { background: #059669; transform: translateY(-1px); }
+        .btn-deactivate { background: #f59e0b; }
+        .btn-deactivate:hover { background: #d97706; transform: translateY(-1px); }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h5 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .modal-header h5 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #64748b;
+            cursor: pointer;
+        }
+
+        .detail-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #64748b;
+            width: 140px;
+            font-size: 13px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar-header h3,
+            .sidebar-header p,
+            .nav-link span {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 70px;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-crown"></i>
+            <h3>TravelHub</h3>
+            <p>Admin Panel</p>
+        </div>
+
+        <nav class="nav flex-column">
+            <div class="nav-item">
+                <a class="nav-link" href="/dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link active" href="/manage-users">
+                    <i class="fas fa-users"></i>
+                    <span>Manage Users</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="/dashboard">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>All Bookings</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="/dashboard">
+                    <i class="fas fa-cog"></i>
+                    <span>Services</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div>
+                <h1>👥 Manage Users</h1>
+                <p class="text-muted mb-0" style="font-size: 14px;">View and manage all user accounts</p>
+            </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search users..." onkeyup="filterUsers()">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-icon total">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalUsers">0</h3>
+                    <p>Total Users</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="pendingUsers">0</h3>
+                    <p>Pending Approval</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon active">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="activeUsers">0</h3>
+                    <p>Active Users</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon inactive">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="inactiveUsers">0</h3>
+                    <p>Inactive Users</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="content-card">
+            <div class="card-header">
+                <h4><i class="fas fa-list me-2"></i>All Users</h4>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filterByRole('all')">All</button>
+                    <button class="filter-tab" onclick="filterByRole('customer')">Customers</button>
+                    <button class="filter-tab" onclick="filterByRole('hotel_owner')">Hotels</button>
+                    <button class="filter-tab" onclick="filterByRole('ticket_owner')">Airlines</button>
+                    <button class="filter-tab" onclick="filterByRole('tour_company')">Tours</button>
+                    <button class="filter-tab" onclick="filterByRole('admin')">Admins</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Business Info</th>
+                            <th>Status</th>
+                            <th>Email Verified</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="7">
+                                <div class="loading">
+                                    <div class="spinner"></div>
+                                    <p>Loading users...</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Details Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5><i class="fas fa-user me-2"></i>User Details</h5>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody">
+                <!-- User details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let allUsers = [];
+        let currentFilter = 'all';
+
+        // Load users
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/admin/users');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allUsers = data.users;
+                    updateStats();
+                    displayUsers(allUsers);
+                } else {
+                    showError('Failed to load users');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Network error');
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalUsers').textContent = allUsers.length;
+            
+            const pending = allUsers.filter(u => !u.isApproved && u.role !== 'customer').length;
+            document.getElementById('pendingUsers').textContent = pending;
+            
+            const active = allUsers.filter(u => u.isActive).length;
+            document.getElementById('activeUsers').textContent = active;
+            
+            const inactive = allUsers.filter(u => !u.isActive).length;
+            document.getElementById('inactiveUsers').textContent = inactive;
+        }
+
+        // Display users
+        function displayUsers(users) {
+            const tbody = document.getElementById('usersTableBody');
+            
+            if (users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="fas fa-users-slash"></i>
+                                <h5>No users found</h5>
+                                <p>No users match your current filter</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = users.map(user => {
+                const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+                const businessInfo = user.hotelName || user.airlineName || user.companyName || '-';
+                
+                return `
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar">${initials}</div>
+                                <div class="user-details">
+                                    <h6>${user.firstName} ${user.lastName}</h6>
+                                    <p>${user.email}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge ${user.role}">${user.role.replace('_', ' ')}</span>
+                        </td>
+                        <td>${businessInfo}</td>
+                        <td>
+                            ${!user.isApproved && user.role !== 'customer' 
+                                ? '<span class="badge pending">Pending</span>' 
+                                : user.isActive 
+                                    ? '<span class="badge active">Active</span>' 
+                                    : '<span class="badge inactive">Inactive</span>'
+                            }
+                        </td>
+                        <td>
+                            <span class="badge ${user.isEmailVerified ? 'verified' : 'unverified'}">
+                                ${user.isEmailVerified ? 'Verified' : 'Unverified'}
+                            </span>
+                        </td>
+                        <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn-action btn-view" onclick='viewUser(${JSON.stringify(user).replace(/'/g, "&apos;")})'>
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            ${!user.isApproved && user.role !== 'customer' ? `
+                                <button class="btn-action btn-approve" onclick="approveUser('${user._id}')">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                            ` : ''}
+                            ${user.isActive ? `
+                                <button class="btn-action btn-deactivate" onclick="deactivateUser('${user._id}')">
+                                    <i class="fas fa-ban"></i> Deactivate
+                                </button>
+                            ` : `
+                                <button class="btn-action btn-activate" onclick="activateUser('${user._id}')">
+                                    <i class="fas fa-check"></i> Activate
+                                </button>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filter users by role
+        function filterByRole(role) {
+            currentFilter = role;
+            
+            // Update active tab
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter users
+            if (role === 'all') {
+                displayUsers(allUsers);
+            } else {
+                const filtered = allUsers.filter(u => u.role === role);
+                displayUsers(filtered);
+            }
+        }
+
+        // Search/filter users
+        function filterUsers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = currentFilter === 'all' 
+                ? allUsers 
+                : allUsers.filter(u => u.role === currentFilter);
+            
+            if (searchTerm) {
+                filtered = filtered.filter(u => 
+                    u.firstName.toLowerCase().includes(searchTerm) ||
+                    u.lastName.toLowerCase().includes(searchTerm) ||
+                    u.email.toLowerCase().includes(searchTerm) ||
+                    (u.hotelName && u.hotelName.toLowerCase().includes(searchTerm)) ||
+                    (u.airlineName && u.airlineName.toLowerCase().includes(searchTerm)) ||
+                    (u.companyName && u.companyName.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            displayUsers(filtered);
+        }
+
+        // View user details
+        function viewUser(user) {
+            const modalBody = document.getElementById('modalBody');
+            
+            modalBody.innerHTML = `
+                <div class="detail-row">
+                    <div class="detail-label">Full Name:</div>
+                    <div class="detail-value"><strong>${user.firstName} ${user.lastName}</strong></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Email:</div>
+                    <div class="detail-value">${user.email}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Phone:</div>
+                    <div class="detail-value">${user.phone || 'Not provided'}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Country:</div>
+                    <div class="detail-value">${user.country || 'Not provided'}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Role:</div>
+                    <div class="detail-value"><span class="badge ${user.role}">${user.role.replace('_', ' ')}</span></div>
+                </div>
+                ${user.hotelName ? `
+                    <div class="detail-row">
+                        <div class="detail-label">Hotel Name:</div>
+                        <div class="detail-value">${user.hotelName}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Hotel Address:</div>
+                        <div class="detail-value">${user.hotelAddress || '-'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Hotel License:</div>
+                        <div class="detail-value">${user.hotelLicense || '-'}</div>
+                    </div>
+                ` : ''}
+                ${user.airlineName ? `
+                    <div class="detail-row">
+                        <div class="detail-label">Airline Name:</div>
+                        <div class="detail-value">${user.airlineName}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Airline License:</div>
+                        <div class="detail-value">${user.airlineLicense || '-'}</div>
+                    </div>
+                ` : ''}
+                ${user.companyName ? `
+                    <div class="detail-row">
+                        <div class="detail-label">Company Name:</div>
+                        <div class="detail-value">${user.companyName}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Company Address:</div>
+                        <div class="detail-value">${user.companyAddress || '-'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Company License:</div>
+                        <div class="detail-value">${user.companyLicense || '-'}</div>
+                    </div>
+                ` : ''}
+                <div class="detail-row">
+                    <div class="detail-label">Email Verified:</div>
+                    <div class="detail-value"><span class="badge ${user.isEmailVerified ? 'verified' : 'unverified'}">${user.isEmailVerified ? 'Yes' : 'No'}</span></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Account Status:</div>
+                    <div class="detail-value"><span class="badge ${user.isActive ? 'active' : 'inactive'}">${user.isActive ? 'Active' : 'Inactive'}</span></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Approved:</div>
+                    <div class="detail-value"><span class="badge ${user.isApproved ? 'approved' : 'pending'}">${user.isApproved ? 'Yes' : 'Pending'}</span></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Registered:</div>
+                    <div class="detail-value">${new Date(user.createdAt).toLocaleString()}</div>
+                </div>
+                ${user.lastLogin ? `
+                    <div class="detail-row">
+                        <div class="detail-label">Last Login:</div>
+                        <div class="detail-value">${new Date(user.lastLogin).toLocaleString()}</div>
+                    </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('userModal').classList.add('show');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('userModal').classList.remove('show');
+        }
+
+        // Approve user
+        async function approveUser(userId) {
+            if (!confirm('Approve this user account?')) return;
+            
+            try {
+                const response = await fetch(`/api/admin/approve/${userId}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ User approved successfully!');
+                    loadUsers();
+                } else {
+                    alert('❌ Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Network error');
+            }
+        }
+
+        // Activate user
+        async function activateUser(userId) {
+            if (!confirm('Activate this user account?')) return;
+            
+            try {
+                const response = await fetch(`/api/admin/activate/${userId}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ User activated successfully!');
+                    loadUsers();
+                } else {
+                    alert('❌ Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Network error');
+            }
+        }
+
+        // Deactivate user
+        async function deactivateUser(userId) {
+            if (!confirm('Deactivate this user account? They will not be able to login.')) return;
+            
+            try {
+                const response = await fetch(`/api/admin/deactivate/${userId}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ User deactivated successfully!');
+                    loadUsers();
+                } else {
+                    alert('❌ Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Network error');
+            }
+        }
+
+        // Logout
+        async function logout() {
+            if (!confirm('Are you sure you want to logout?')) return;
+            
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                window.location.href = '/login';
+            } catch (error) {
+                window.location.href = '/login';
+            }
+        }
+
+        // Show error
+        function showError(message) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <h5>Error</h5>
+                            <p>${message}</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('userModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUsers();
+            
+            // Refresh every 30 seconds
+            setInterval(loadUsers, 30000);
+        });
+    </script>
+</body>
+</html>
